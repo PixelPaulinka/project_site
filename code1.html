@@ -89,8 +89,17 @@ import seaborn as sns
 from tkinter import Tk, Text, END, messagebox
 from tkinter import ttk
 import platform
+import spacy
+
 nltk.download('stopwords')
 stop_words = set(nltk.corpus.stopwords.words('russian'))
+
+try:
+    nlp = spacy.load("ru_core_news_sm")
+except OSError:
+    print("Модель spaCy для русского языка не найдена. Установите её командой:")
+    print("python -m spacy download ru_core_news_sm")
+    exit()
 
 emotion_keywords = {
     'Злость': ['злость', 'гнев', 'раздражение', 'агрессия', 'ненависть', 'обида', 'злобный', 'враждебность'],
@@ -126,11 +135,15 @@ def visualize_emotions(emotions):
 
 def get_text_from_clipboard():
     if platform.system() == "Windows":
-        import win32clipboard
-        win32clipboard.OpenClipboard()
-        text = win32clipboard.GetClipboardData()
-        win32clipboard.CloseClipboard()
-        return text
+        try:
+            import win32clipboard
+            win32clipboard.OpenClipboard()
+            text = win32clipboard.GetClipboardData()
+            win32clipboard.CloseClipboard()
+            return text
+        except:
+            return ""
+    return ""
 
 def create_gui():
     root = Tk()
